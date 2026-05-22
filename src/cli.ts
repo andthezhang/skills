@@ -168,8 +168,8 @@ ${BOLD}Options:${RESET}
 
 ${BOLD}Examples:${RESET}
   ${DIM}$${RESET} skills add vercel-labs/agent-skills
-  ${DIM}$${RESET} skills run vercel-labs/agent-skills@nextjs | claude
-  ${DIM}$${RESET} skills run vercel-labs/agent-skills --skill nextjs --agent claude-code
+  ${DIM}$${RESET} skills run vercel-labs/agent-skills@vercel-optimize | claude
+  ${DIM}$${RESET} skills run vercel-labs/agent-skills --skill vercel-optimize --agent claude-code
   ${DIM}$${RESET} skills add vercel-labs/agent-skills -g
   ${DIM}$${RESET} skills add vercel-labs/agent-skills --agent claude-code cursor
   ${DIM}$${RESET} skills add vercel-labs/agent-skills --skill pr-review commit
