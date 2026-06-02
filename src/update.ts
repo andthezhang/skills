@@ -19,6 +19,7 @@ import { removeCommand } from './remove.ts';
 import { sanitizeMetadata } from './sanitize.ts';
 import { track } from './telemetry.ts';
 import { agents, isUniversalAgent } from './agents.ts';
+import { stripPrefix } from './installer.ts';
 import type { AgentType } from './types.ts';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -453,11 +454,17 @@ export async function updateGlobalSkills(
       );
       continue;
     }
-    const result = spawnSync(process.execPath, [cliEntry, 'add', installUrl, '-g', '-y'], {
-      stdio: ['inherit', 'pipe', 'pipe'],
-      encoding: 'utf-8',
-      shell: process.platform === 'win32',
-    });
+    // Re-apply the recorded prefix so a prefixed skill stays prefixed on update.
+    const prefixArgs = update.entry.prefix ? [`--prefix=${update.entry.prefix}`] : [];
+    const result = spawnSync(
+      process.execPath,
+      [cliEntry, 'add', installUrl, '-g', '-y', ...prefixArgs],
+      {
+        stdio: ['inherit', 'pipe', 'pipe'],
+        encoding: 'utf-8',
+        shell: process.platform === 'win32',
+      }
+    );
 
     if (result.status === 0) {
       successCount++;
@@ -586,9 +593,13 @@ export async function updateProjectSkills(
       console.log(`${TEXT}Updating ${safeName}...${RESET}`);
       const installUrl = formatSourceInput(skill.entry.source, skill.entry.ref);
 
+      // The lock key is the prefixed name; --skill must match the unprefixed
+      // upstream skill, so strip the prefix and re-pass it via --prefix.
+      const targetSkill = stripPrefix(skill.name, skill.entry.prefix);
+      const prefixArgs = skill.entry.prefix ? [`--prefix=${skill.entry.prefix}`] : [];
       const result = spawnSync(
         process.execPath,
-        [cliEntry, 'add', installUrl, '--skill', skill.name, '-y'],
+        [cliEntry, 'add', installUrl, '--skill', targetSkill, '-y', ...prefixArgs],
         {
           stdio: ['inherit', 'pipe', 'pipe'],
           encoding: 'utf-8',

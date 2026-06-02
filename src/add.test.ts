@@ -4,7 +4,7 @@ import { join } from 'path';
 import { tmpdir } from 'os';
 import { runCli } from './test-utils.ts';
 import { shouldInstallInternalSkills } from './skills.ts';
-import { parseAddOptions, getLockSource } from './add.ts';
+import { parseAddOptions, getLockSource, resolvePrefix } from './add.ts';
 
 describe('add command', () => {
   let testDir: string;
@@ -406,6 +406,49 @@ describe('parseAddOptions', () => {
     expect(result.options.fullDepth).toBe(true);
     expect(result.options.list).toBe(true);
     expect(result.options.global).toBe(true);
+  });
+
+  it('should parse bare --prefix as true (derive from repo)', () => {
+    const result = parseAddOptions(['owner/repo', '--prefix']);
+    expect(result.source).toEqual(['owner/repo']);
+    expect(result.options.prefix).toBe(true);
+  });
+
+  it('should parse --prefix=<value> as a custom string', () => {
+    const result = parseAddOptions(['owner/repo', '--prefix=mktg']);
+    expect(result.source).toEqual(['owner/repo']);
+    expect(result.options.prefix).toBe('mktg');
+  });
+
+  it('should not consume the positional source as a prefix value', () => {
+    const result = parseAddOptions(['--prefix', 'owner/repo']);
+    expect(result.source).toEqual(['owner/repo']);
+    expect(result.options.prefix).toBe(true);
+  });
+
+  it('should treat an empty --prefix= as auto-derive', () => {
+    const result = parseAddOptions(['owner/repo', '--prefix=']);
+    expect(result.options.prefix).toBe(true);
+  });
+});
+
+describe('resolvePrefix', () => {
+  it('returns undefined when no prefix requested', () => {
+    expect(resolvePrefix(undefined, 'owner/repo')).toBeUndefined();
+  });
+
+  it('derives the repo name from the source for bare --prefix', () => {
+    expect(resolvePrefix(true, 'vercel-labs/marketing-skills')).toBe('marketing-skills');
+  });
+
+  it('returns undefined for bare --prefix when the source has no repo', () => {
+    expect(resolvePrefix(true, null)).toBeUndefined();
+    expect(resolvePrefix(true, 'not-a-repo-source')).toBeUndefined();
+  });
+
+  it('uses a custom prefix string as-is, even without a repo source', () => {
+    expect(resolvePrefix('mktg', null)).toBe('mktg');
+    expect(resolvePrefix('mktg', 'owner/repo')).toBe('mktg');
   });
 });
 
