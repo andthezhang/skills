@@ -49,20 +49,20 @@ describe('installer copy mode', () => {
     const root = await mkdtemp(join(tmpdir(), 'add-skill-prefix-'));
     const projectDir = join(root, 'project');
     await mkdir(projectDir, { recursive: true });
-    const skillDir = await makeSkillSource(root, 'seo-audit');
+    const skillDir = await makeSkillSource(root, 'tool');
 
     try {
       const result = await installSkillForAgent(
-        { name: 'seo-audit', description: 'test', path: skillDir },
+        { name: 'tool', description: 'test', path: skillDir },
         'codex',
-        { cwd: projectDir, mode: 'copy', global: false, prefix: 'marketing-skills' }
+        { cwd: projectDir, mode: 'copy', global: false, prefix: 'bundle' }
       );
 
       expect(result.success).toBe(true);
       await expect(
-        access(join(projectDir, '.agents/skills/marketing-skills-seo-audit/SKILL.md'))
+        access(join(projectDir, '.agents/skills/bundle-tool/SKILL.md'))
       ).resolves.toBeUndefined();
-      await expect(access(join(projectDir, '.agents/skills/seo-audit'))).rejects.toThrow();
+      await expect(access(join(projectDir, '.agents/skills/tool'))).rejects.toThrow();
     } finally {
       await rm(root, { recursive: true, force: true });
     }
@@ -72,23 +72,23 @@ describe('installer copy mode', () => {
     const root = await mkdtemp(join(tmpdir(), 'add-skill-rename-'));
     const projectDir = join(root, 'project');
     await mkdir(projectDir, { recursive: true });
-    const skillDir = await makeSkillSource(root, 'seo-audit');
+    const skillDir = await makeSkillSource(root, 'tool');
 
     try {
       const result = await installSkillForAgent(
-        { name: 'seo-audit', description: 'test', path: skillDir },
+        { name: 'tool', description: 'test', path: skillDir },
         'codex',
-        { cwd: projectDir, mode: 'copy', global: false, prefix: 'marketing-skills' }
+        { cwd: projectDir, mode: 'copy', global: false, prefix: 'bundle' }
       );
       expect(result.success).toBe(true);
 
-      const installedDir = join(projectDir, '.agents/skills/marketing-skills-seo-audit');
-      await renameInstalledSkill(installedDir, 'marketing-skills-seo-audit');
+      const installedDir = join(projectDir, '.agents/skills/bundle-tool');
+      await renameInstalledSkill(installedDir, 'bundle-tool');
 
       const md = await readFile(join(installedDir, 'SKILL.md'), 'utf-8');
-      expect(md).toContain('name: marketing-skills-seo-audit');
+      expect(md).toContain('name: bundle-tool');
       expect(md).toContain('description: test');
-      expect(md).not.toContain('name: seo-audit');
+      expect(md).not.toContain('name: tool');
     } finally {
       await rm(root, { recursive: true, force: true });
     }

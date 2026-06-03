@@ -145,38 +145,36 @@ describe('sanitizeName', () => {
 
 describe('applyPrefix', () => {
   it('prepends a sanitized prefix', () => {
-    expect(applyPrefix('seo-audit', 'marketing-skills')).toBe('marketing-skills-seo-audit');
-    expect(applyPrefix('seo-audit', 'Marketing Skills')).toBe('marketing-skills-seo-audit');
+    expect(applyPrefix('tool', 'bundle')).toBe('bundle-tool');
+    expect(applyPrefix('tool', 'Bundle Pack')).toBe('bundle-pack-tool');
   });
 
   it('is a no-op without a prefix', () => {
-    expect(applyPrefix('seo-audit')).toBe('seo-audit');
-    expect(applyPrefix('seo-audit', '')).toBe('seo-audit');
+    expect(applyPrefix('tool')).toBe('tool');
+    expect(applyPrefix('tool', '')).toBe('tool');
   });
 
   it('does not double-prefix', () => {
     expect(applyPrefix('browser-use', 'browser-use')).toBe('browser-use');
-    expect(applyPrefix('marketing-skills-seo-audit', 'marketing-skills')).toBe(
-      'marketing-skills-seo-audit'
-    );
+    expect(applyPrefix('bundle-tool', 'bundle')).toBe('bundle-tool');
   });
 });
 
 describe('stripPrefix', () => {
   it('removes an applied prefix (inverse of applyPrefix)', () => {
-    expect(stripPrefix('marketing-skills-seo-audit', 'marketing-skills')).toBe('seo-audit');
+    expect(stripPrefix('bundle-tool', 'bundle')).toBe('tool');
   });
 
   it('is a no-op when not prefixed or no prefix given', () => {
-    expect(stripPrefix('seo-audit', 'marketing-skills')).toBe('seo-audit');
-    expect(stripPrefix('seo-audit')).toBe('seo-audit');
+    expect(stripPrefix('tool', 'bundle')).toBe('tool');
+    expect(stripPrefix('tool')).toBe('tool');
     // Dedup case: name equals prefix, never had a `<prefix>-` segment.
     expect(stripPrefix('browser-use', 'browser-use')).toBe('browser-use');
   });
 
   it('round-trips with applyPrefix', () => {
-    const prefix = 'marketing-skills';
-    expect(stripPrefix(applyPrefix('seo-audit', prefix), prefix)).toBe('seo-audit');
+    const prefix = 'bundle';
+    expect(stripPrefix(applyPrefix('tool', prefix), prefix)).toBe('tool');
   });
 });
 
@@ -186,30 +184,28 @@ describe('buildInstallName', () => {
   });
 
   it('namespaces under a prefix', () => {
-    expect(buildInstallName('seo-audit', 'marketing-skills')).toBe('marketing-skills-seo-audit');
+    expect(buildInstallName('tool', 'bundle')).toBe('bundle-tool');
   });
 
   it('does not double-prefix an already-prefixed name', () => {
     expect(buildInstallName('browser-use', 'browser-use')).toBe('browser-use');
-    expect(buildInstallName('marketing-skills-seo-audit', 'marketing-skills')).toBe(
-      'marketing-skills-seo-audit'
-    );
+    expect(buildInstallName('bundle-tool', 'bundle')).toBe('bundle-tool');
   });
 });
 
 describe('rewriteFrontmatterName', () => {
   it('rewrites the name value inside frontmatter, leaving the body intact', () => {
-    const raw = `---\nname: seo-audit\ndescription: Audit SEO\n---\n# Body\ntext\n`;
-    const out = rewriteFrontmatterName(raw, 'marketing-skills-seo-audit');
-    expect(out).toContain('name: marketing-skills-seo-audit');
-    expect(out).toContain('description: Audit SEO');
+    const raw = `---\nname: tool\ndescription: Test tool\n---\n# Body\ntext\n`;
+    const out = rewriteFrontmatterName(raw, 'bundle-tool');
+    expect(out).toContain('name: bundle-tool');
+    expect(out).toContain('description: Test tool');
     expect(out).toContain('# Body');
-    expect(out).not.toContain('name: seo-audit');
+    expect(out).not.toContain('name: tool');
   });
 
   it('is idempotent', () => {
-    const raw = `---\nname: marketing-skills-seo-audit\n---\nbody\n`;
-    expect(rewriteFrontmatterName(raw, 'marketing-skills-seo-audit')).toBe(raw);
+    const raw = `---\nname: bundle-tool\n---\nbody\n`;
+    expect(rewriteFrontmatterName(raw, 'bundle-tool')).toBe(raw);
   });
 
   it('inserts a name line when frontmatter lacks one', () => {

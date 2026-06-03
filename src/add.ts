@@ -463,8 +463,8 @@ export interface AddOptions {
   fullDepth?: boolean;
   copy?: boolean;
   /**
-   * Namespace installed skills under a prefix (e.g. `marketing-skills-seo-audit`)
-   * so a repo's skills group together and don't collide across sources.
+   * Namespace installed skills under a prefix so a repo's skills group
+   * together and don't collide across sources.
    * `true` (bare `--prefix`) derives the prefix from the source repo name;
    * a string (`--prefix=<value>`) uses a custom prefix. Recorded in the lock
    * file so `update` keeps the skill prefixed.
@@ -1647,9 +1647,9 @@ export async function runAdd(args: string[], options: AddOptions = {}): Promise<
     spinner.stop('Installation complete');
 
     // When a prefix was applied, rewrite each installed SKILL.md's `name:` to
-    // the prefixed name so the agent actually invokes it as e.g.
-    // `marketing-skills-seo-audit`. Symlink mode shares one canonical copy, so
-    // dedupe paths; copy mode rewrites each agent's copy.
+    // the prefixed name so the agent invokes the namespaced skill. Symlink mode
+    // shares one canonical copy, so dedupe paths; copy mode rewrites each
+    // agent's copy.
     if (resolvedPrefix) {
       const renamed = new Set<string>();
       for (const skill of selectedSkills) {

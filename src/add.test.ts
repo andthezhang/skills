@@ -415,9 +415,9 @@ describe('parseAddOptions', () => {
   });
 
   it('should parse --prefix=<value> as a custom string', () => {
-    const result = parseAddOptions(['owner/repo', '--prefix=mktg']);
+    const result = parseAddOptions(['owner/repo', '--prefix=team']);
     expect(result.source).toEqual(['owner/repo']);
-    expect(result.options.prefix).toBe('mktg');
+    expect(result.options.prefix).toBe('team');
   });
 
   it('should not consume the positional source as a prefix value', () => {
@@ -438,7 +438,7 @@ describe('resolvePrefix', () => {
   });
 
   it('derives the repo name from the source for bare --prefix', () => {
-    expect(resolvePrefix(true, 'vercel-labs/marketing-skills')).toBe('marketing-skills');
+    expect(resolvePrefix(true, 'owner/bundle')).toBe('bundle');
   });
 
   it('returns undefined for bare --prefix when the source has no repo', () => {
@@ -447,8 +447,8 @@ describe('resolvePrefix', () => {
   });
 
   it('uses a custom prefix string as-is, even without a repo source', () => {
-    expect(resolvePrefix('mktg', null)).toBe('mktg');
-    expect(resolvePrefix('mktg', 'owner/repo')).toBe('mktg');
+    expect(resolvePrefix('team', null)).toBe('team');
+    expect(resolvePrefix('team', 'owner/repo')).toBe('team');
   });
 });
 

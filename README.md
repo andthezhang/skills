@@ -56,7 +56,7 @@ npx skills add ./my-local-skills
 | `-s, --skill <skills...>` | Install specific skills by name (use `'*'` for all skills)                                                                                                                                                                                                                                      |
 | `-l, --list`              | List available skills without installing                                                                                                                                                                                                                                                        |
 | `--copy`                  | Copy files instead of symlinking to agent directories                                                                                                                                                                                                                                           |
-| `--prefix[=<value>]`      | Namespace installed skills (e.g. `marketing-skills-seo-audit`) so a repo's skills group together and don't collide across sources. Bare `--prefix` derives the prefix from the repo name; `--prefix=<value>` sets a custom one. Recorded in the lock file so `update` keeps the skill prefixed. |
+| `--prefix[=<value>]`      | Namespace installed skills so a repo's skills group together and don't collide across sources. Bare `--prefix` derives the prefix from the repo name; `--prefix=<value>` sets a custom one. Recorded in the lock file so `update` keeps the skill prefixed. |
 | `-y, --yes`               | Skip all confirmation prompts                                                                                                                                                                                                                                                                   |
 | `--all`                   | Install all skills to all agents without prompts                                                                                                                                                                                                                                                |
 
@@ -87,11 +87,11 @@ npx skills add vercel-labs/agent-skills --skill '*' -a claude-code
 # Install specific skills to all agents
 npx skills add vercel-labs/agent-skills --agent '*' --skill frontend-design
 
-# Group a repo's skills under its name (e.g. marketing-skills-seo-audit)
-npx skills add vercel-labs/marketing-skills --prefix
+# Group a repo's skills under its repo name
+npx skills add owner/repo --prefix
 
 # Use a custom prefix instead of the repo name
-npx skills add vercel-labs/marketing-skills --prefix=mktg
+npx skills add owner/repo --prefix=team
 ```
 
 ### Installation Scope

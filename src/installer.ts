@@ -58,10 +58,9 @@ export function sanitizeName(name: string): string {
 }
 
 /**
- * Apply a `<prefix>-` namespace to a (already-sanitized) skill name, e.g. to
- * group a repo's skills under their source (`marketing-skills-seo-audit`). The
- * prefix is sanitized with the same rules. To avoid double-prefixing, the name
- * is returned unchanged when it already equals the prefix or already starts
+ * Apply a `<prefix>-` namespace to a (already-sanitized) skill name. The prefix
+ * is sanitized with the same rules. To avoid double-prefixing, the name is
+ * returned unchanged when it already equals the prefix or already starts
  * with `<prefix>-` (so a repo `browser-use` shipping a `browser-use` skill
  * stays `browser-use`, not `browser-use-browser-use`).
  */
@@ -95,11 +94,11 @@ export function buildInstallName(rawName: string, prefix?: string): string {
 
 /**
  * Rewrite the `name:` value in a SKILL.md frontmatter block so the skill is
- * actually invoked under its prefixed name (e.g. `marketing-skills-seo-audit`),
- * not just stored in a prefixed folder. Operates only inside the leading
- * `---` block, leaves the body untouched, and inserts a `name:` line if the
- * frontmatter somehow lacks one. Returns the input unchanged when there is no
- * frontmatter block. Idempotent: re-running with the same name is a no-op.
+ * actually invoked under its prefixed name, not just stored in a prefixed
+ * folder. Operates only inside the leading `---` block, leaves the body
+ * untouched, and inserts a `name:` line if the frontmatter somehow lacks one.
+ * Returns the input unchanged when there is no frontmatter block. Idempotent:
+ * re-running with the same name is a no-op.
  */
 export function rewriteFrontmatterName(raw: string, newName: string): string {
   const match = raw.match(/^(---\r?\n)([\s\S]*?)(\r?\n---\r?\n?)([\s\S]*)$/);
@@ -324,7 +323,7 @@ export async function installSkillForAgent(
   }
 
   // Sanitize skill name to prevent directory traversal, then namespace it
-  // under the optional prefix (e.g. `marketing-skills-seo-audit`).
+  // under the optional prefix.
   const rawSkillName = skill.name || basename(skill.path);
   const skillName = applyPrefix(sanitizeName(rawSkillName), options.prefix);
 
