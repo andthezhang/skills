@@ -20,6 +20,7 @@ import { sanitizeMetadata } from './sanitize.ts';
 import { track } from './telemetry.ts';
 import { agents, isUniversalAgent } from './agents.ts';
 import { stripPrefix } from './installer.ts';
+import { parseSource } from './source-parser.ts';
 import type { AgentType } from './types.ts';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -551,7 +552,7 @@ export async function updateProjectSkills(
 
   for (const [source, skillsForSource] of bySource) {
     const firstEntry = skillsForSource[0]!.entry;
-    const sourceUrl = firstEntry.source;
+    const sourceUrl = parseSource(firstEntry.source).url;
     const ref = firstEntry.ref;
 
     const allLockedForSource = Object.entries(localLock.skills)
