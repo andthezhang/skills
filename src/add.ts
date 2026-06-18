@@ -1657,10 +1657,12 @@ export async function runAdd(args: string[], options: AddOptions = {}): Promise<
         const displayName = getSkillDisplayName(skill);
         for (const r of results) {
           if (!r.success || r.skill !== displayName) continue;
-          const dir = r.canonicalPath || r.path;
-          if (!dir || renamed.has(dir)) continue;
-          renamed.add(dir);
-          await renameInstalledSkill(dir, prefixedName);
+          const dirs = [r.canonicalPath, r.path].filter((dir): dir is string => Boolean(dir));
+          for (const dir of dirs) {
+            if (renamed.has(dir)) continue;
+            renamed.add(dir);
+            await renameInstalledSkill(dir, prefixedName);
+          }
         }
       }
     }
