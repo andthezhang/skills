@@ -1611,6 +1611,7 @@ export async function runAdd(args: string[], options: AddOptions = {}): Promise<
       symlinkFailed?: boolean;
       error?: string;
       pluginName?: string;
+      agentType: AgentType;
     }[] = [];
 
     for (const skill of selectedSkills) {
@@ -1638,6 +1639,7 @@ export async function runAdd(args: string[], options: AddOptions = {}): Promise<
         results.push({
           skill: getSkillDisplayName(skill),
           agent: agents[agent].displayName,
+          agentType: agent,
           pluginName: skill.pluginName,
           ...result,
         });
@@ -1657,6 +1659,7 @@ export async function runAdd(args: string[], options: AddOptions = {}): Promise<
         const displayName = getSkillDisplayName(skill);
         for (const r of results) {
           if (!r.success || r.skill !== displayName) continue;
+          if (r.agentType === 'eve') continue;
           const dirs = [r.canonicalPath, r.path].filter((dir): dir is string => Boolean(dir));
           for (const dir of dirs) {
             if (renamed.has(dir)) continue;

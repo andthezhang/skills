@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { existsSync, rmSync, mkdirSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, rmSync, mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
 import { runCli } from './test-utils.ts';
@@ -88,6 +88,39 @@ Instructions here.
     expect(result.stdout).toContain('my-skill');
     expect(result.stdout).toContain('Done!');
     expect(result.exitCode).toBe(0);
+  });
+
+  it('should preserve Eve frontmatter rules when installing with --prefix', () => {
+    const skillDir = join(testDir, 'skills', 'eve-skill');
+    mkdirSync(skillDir, { recursive: true });
+    writeFileSync(
+      join(skillDir, 'SKILL.md'),
+      `---
+name: eve-skill
+description: Eve skill
+---
+
+# Eve Skill
+`
+    );
+
+    const targetDir = join(testDir, 'eve-project');
+    mkdirSync(join(targetDir, 'agent'), { recursive: true });
+    writeFileSync(
+      join(targetDir, 'package.json'),
+      JSON.stringify({ dependencies: { eve: '^0.11.5' } }),
+      'utf-8'
+    );
+
+    const result = runCli(['add', testDir, '-y', '--agent', 'eve', '--prefix=repo'], targetDir);
+
+    expect(result.exitCode).toBe(0);
+    const installed = readFileSync(
+      join(targetDir, 'agent/skills/repo-eve-skill/SKILL.md'),
+      'utf-8'
+    );
+    expect(installed).toContain('description: "Eve skill"');
+    expect(installed).not.toContain('name:');
   });
 
   it('should filter skills by name with --skill flag', () => {
